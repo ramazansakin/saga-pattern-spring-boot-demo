@@ -1,6 +1,7 @@
 package com.appsdeveloperblog.orders.saga;
 
 import com.appsdeveloperblog.core.dto.commands.ApproveOrderCommand;
+import com.appsdeveloperblog.core.dto.commands.CancelProductReservationCommand;
 import com.appsdeveloperblog.core.dto.commands.ProcessPaymentCommand;
 import com.appsdeveloperblog.core.dto.commands.ReserveProductCommand;
 import com.appsdeveloperblog.core.dto.events.*;
@@ -74,6 +75,10 @@ public class OrderSaga {
 
     @KafkaHandler
     public void handleEvent(@Payload PaymentFailedEvent event) {
-        
+        CancelProductReservationCommand cancelProductReservationCommand =
+                new CancelProductReservationCommand(event.getProductId(),
+                        event.getOrderId(),
+                        event.getProductQuantity());
+        kafkaTemplate.send(productsCommandsTopicName, cancelProductReservationCommand);
     }
 }

@@ -1,3 +1,3 @@
 # saga-pattern-spring-boot-demo
 
-Demonstration of SAGA Orchestration Design Pattern using Spring Boot and Kafka
+Sample multi-module Spring Boot microservices like Order-Service, Product-service and Payment-Service to show Event-Driven/Orchestration-based Saga Pattern implementation with Kafka

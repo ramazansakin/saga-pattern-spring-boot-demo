@@ -21,6 +21,7 @@
         <module>products-service</module>
         <module>payments-service</module>
         <module>credit-card-processor-service</module>
+        <module>core</module>
     </modules>
 
     <properties>

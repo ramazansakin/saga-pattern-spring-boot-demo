@@ -30,17 +30,17 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order placeOrder(Order order) {
         OrderEntity entity = new OrderEntity();
-        entity.setCustomerId(order.getCustomerId());
-        entity.setProductId(order.getProductId());
-        entity.setProductQuantity(order.getProductQuantity());
+        entity.setCustomerId(order.customerId());
+        entity.setProductId(order.productId());
+        entity.setProductQuantity(order.productQuantity());
         entity.setStatus(OrderStatus.CREATED);
         orderRepository.save(entity);
 
         OrderCreatedEvent placedOrder = new OrderCreatedEvent(
                 entity.getId(),
                 entity.getCustomerId(),
-                order.getProductId(),
-                order.getProductQuantity()
+                order.productId(),
+                order.productQuantity()
         );
         kafkaTemplate.send(ordersEventsTopicName, placedOrder);
 

@@ -29,8 +29,13 @@ public class OrdersController {
     @PostMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
     public CreateOrderResponse placeOrder(@RequestBody @Valid CreateOrderRequest request) {
-        var order = new Order();
-        BeanUtils.copyProperties(request, order);
+        var order = new Order(
+                null,
+                request.getCustomerId(),
+                request.getProductId(),
+                request.getProductQuantity(),
+                null);
+
         Order createdOrder = orderService.placeOrder(order);
 
         var response = new CreateOrderResponse();

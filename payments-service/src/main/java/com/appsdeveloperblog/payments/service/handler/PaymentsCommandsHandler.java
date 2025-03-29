@@ -36,20 +36,29 @@ public class PaymentsCommandsHandler {
     public void handleCommand(@Payload ProcessPaymentCommand command) {
 
         try {
-            Payment payment = new Payment(command.getOrderId(),
+            Payment payment = new Payment(
+                    null,
+                    command.getOrderId(),
                     command.getProductId(),
                     command.getProductPrice(),
                     command.getProductQuantity());
+
             Payment processedPayment = paymentService.process(payment);
-            PaymentProcessedEvent paymentProcessedEvent = new PaymentProcessedEvent(processedPayment.getOrderId(),
-                    processedPayment.getId());
+
+            PaymentProcessedEvent paymentProcessedEvent =
+                    new PaymentProcessedEvent(processedPayment.orderId(), processedPayment.id());
+
             kafkaTemplate.send(paymentEventsTopicName, paymentProcessedEvent);
+
         } catch (CreditCardProcessorUnavailableException e) {
             logger.error(e.getLocalizedMessage(), e);
-            PaymentFailedEvent paymentFailedEvent = new PaymentFailedEvent(command.getOrderId(),
-                    command.getProductId(),
-                    command.getProductQuantity());
+
+            PaymentFailedEvent paymentFailedEvent =
+                    new PaymentFailedEvent(command.getOrderId(), command.getProductId(), command.getProductQuantity());
+
             kafkaTemplate.send(paymentEventsTopicName,paymentFailedEvent);
         }
+
     }
+
 }

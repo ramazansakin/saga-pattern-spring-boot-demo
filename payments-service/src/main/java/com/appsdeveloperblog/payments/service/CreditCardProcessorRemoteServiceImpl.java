@@ -12,6 +12,7 @@ import java.math.BigInteger;
 
 @Service
 public class CreditCardProcessorRemoteServiceImpl implements CreditCardProcessorRemoteService {
+
     private final RestTemplate restTemplate;
     private final String ccpRemoteServiceUrl;
 
@@ -34,4 +35,5 @@ public class CreditCardProcessorRemoteServiceImpl implements CreditCardProcessor
             throw new CreditCardProcessorUnavailableException(e);
         }
     }
+
 }

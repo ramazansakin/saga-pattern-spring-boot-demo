@@ -39,15 +39,15 @@ public class ProductCommandsHandler {
 
         try {
             Product desiredProduct = new Product(
-                    command.getProductId(), null, null, command.getProductQuantity());
+                    command.productId(), null, null, command.productQuantity());
 
-            Product reservedProduct = productService.reserve(desiredProduct, command.getOrderId());
+            Product reservedProduct = productService.reserve(desiredProduct, command.orderId());
 
             ProductReservedEvent productReservedEvent = new ProductReservedEvent(
-                    command.getOrderId(),
-                    command.getProductId(),
+                    command.orderId(),
+                    command.productId(),
                     reservedProduct.price(),
-                    command.getProductQuantity());
+                    command.productQuantity());
 
             kafkaTemplate.send(productEventsTopicName, productReservedEvent);
 
@@ -55,9 +55,9 @@ public class ProductCommandsHandler {
             logger.error(e.getLocalizedMessage(), e);
 
             ProductReservationFailedEvent productReservationFailedEvent =
-                    new ProductReservationFailedEvent(command.getProductId(),
-                            command.getOrderId(),
-                            command.getProductQuantity());
+                    new ProductReservationFailedEvent(command.productId(),
+                            command.orderId(),
+                            command.productQuantity());
 
             kafkaTemplate.send(productEventsTopicName, productReservationFailedEvent);
         }
@@ -66,12 +66,12 @@ public class ProductCommandsHandler {
     @KafkaHandler
     public void handleCommand(@Payload CancelProductReservationCommand command) {
         Product productToCancel = new Product(
-                command.getProductId(), null, null, command.getProductQuantity());
+                command.productId(), null, null, command.productQuantity());
 
-        productService.cancelReservation(productToCancel, command.getOrderId());
+        productService.cancelReservation(productToCancel, command.orderId());
 
         ProductReservationCancelledEvent productReservationCancelledEvent =
-                new ProductReservationCancelledEvent(command.getProductId(), command.getOrderId());
+                new ProductReservationCancelledEvent(command.productId(), command.orderId());
 
         kafkaTemplate.send(productEventsTopicName, productReservationCancelledEvent);
     }

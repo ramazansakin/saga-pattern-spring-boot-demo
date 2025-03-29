@@ -6,6 +6,7 @@ import com.appsdeveloperblog.core.dto.events.PaymentFailedEvent;
 import com.appsdeveloperblog.core.dto.events.PaymentProcessedEvent;
 import com.appsdeveloperblog.core.exceptions.CreditCardProcessorUnavailableException;
 import com.appsdeveloperblog.payments.service.PaymentService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,11 +18,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @KafkaListener(topics="${payments.commands.topic.name}")
+@Slf4j
 public class PaymentsCommandsHandler {
 
     private final PaymentService paymentService;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final KafkaTemplate<String, Object> kafkaTemplate;
+
     private final String paymentEventsTopicName;
 
     public PaymentsCommandsHandler(PaymentService paymentService,
@@ -38,10 +40,10 @@ public class PaymentsCommandsHandler {
         try {
             Payment payment = new Payment(
                     null,
-                    command.getOrderId(),
-                    command.getProductId(),
-                    command.getProductPrice(),
-                    command.getProductQuantity());
+                    command.orderId(),
+                    command.productId(),
+                    command.productPrice(),
+                    command.productQuantity());
 
             Payment processedPayment = paymentService.process(payment);
 
@@ -51,10 +53,10 @@ public class PaymentsCommandsHandler {
             kafkaTemplate.send(paymentEventsTopicName, paymentProcessedEvent);
 
         } catch (CreditCardProcessorUnavailableException e) {
-            logger.error(e.getLocalizedMessage(), e);
+            log.error(e.getLocalizedMessage(), e);
 
             PaymentFailedEvent paymentFailedEvent =
-                    new PaymentFailedEvent(command.getOrderId(), command.getProductId(), command.getProductQuantity());
+                    new PaymentFailedEvent(command.orderId(), command.productId(), command.productQuantity());
 
             kafkaTemplate.send(paymentEventsTopicName,paymentFailedEvent);
         }

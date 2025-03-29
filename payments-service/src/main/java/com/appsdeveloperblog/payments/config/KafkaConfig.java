@@ -11,10 +11,11 @@ import org.springframework.kafka.core.ProducerFactory;
 @Configuration
 public class KafkaConfig {
 
+    private static final Integer TOPIC_REPLICATION_FACTOR = 3;
+    private static final Integer TOPIC_PARTITIONS = 3;
+
     @Value("${payments.events.topic.name}")
     private String paymentsEventsTopicName;
-    private final static Integer TOPIC_REPLICATION_FACTOR=3;
-    private final static Integer TOPIC_PARTITIONS=3;
 
     @Bean
     KafkaTemplate<String, Object> kafkaTemplate(ProducerFactory<String, Object> producerFactory) {
@@ -28,4 +29,5 @@ public class KafkaConfig {
                 .replicas(TOPIC_REPLICATION_FACTOR)
                 .build();
     }
+
 }

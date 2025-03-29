@@ -21,9 +21,10 @@ import org.springframework.stereotype.Component;
 public class ProductCommandsHandler {
 
     private final ProductService productService;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final KafkaTemplate<String, Object> kafkaTemplate;
+
     private final String productEventsTopicName;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public ProductCommandsHandler(ProductService productService,
                                   KafkaTemplate<String, Object> kafkaTemplate,
@@ -37,30 +38,42 @@ public class ProductCommandsHandler {
     public void handleCommand(@Payload ReserveProductCommand command) {
 
         try {
-            Product desiredProduct = new Product(command.getProductId(), command.getProductQuantity());
+            Product desiredProduct = new Product(
+                    command.getProductId(), null, null, command.getProductQuantity());
+
             Product reservedProduct = productService.reserve(desiredProduct, command.getOrderId());
-            ProductReservedEvent productReservedEvent = new ProductReservedEvent(command.getOrderId(),
+
+            ProductReservedEvent productReservedEvent = new ProductReservedEvent(
+                    command.getOrderId(),
                     command.getProductId(),
-                    reservedProduct.getPrice(),
+                    reservedProduct.price(),
                     command.getProductQuantity());
+
             kafkaTemplate.send(productEventsTopicName, productReservedEvent);
+
         } catch (Exception e) {
             logger.error(e.getLocalizedMessage(), e);
+
             ProductReservationFailedEvent productReservationFailedEvent =
                     new ProductReservationFailedEvent(command.getProductId(),
                             command.getOrderId(),
                             command.getProductQuantity());
+
             kafkaTemplate.send(productEventsTopicName, productReservationFailedEvent);
         }
     }
 
     @KafkaHandler
     public void handleCommand(@Payload CancelProductReservationCommand command) {
-        Product productToCancel = new Product(command.getProductId(), command.getProductQuantity());
+        Product productToCancel = new Product(
+                command.getProductId(), null, null, command.getProductQuantity());
+
         productService.cancelReservation(productToCancel, command.getOrderId());
 
         ProductReservationCancelledEvent productReservationCancelledEvent =
                 new ProductReservationCancelledEvent(command.getProductId(), command.getOrderId());
+
         kafkaTemplate.send(productEventsTopicName, productReservationCancelledEvent);
     }
+
 }

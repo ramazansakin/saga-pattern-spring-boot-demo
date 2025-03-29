@@ -29,8 +29,8 @@ public class ProductsController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ProductCreationResponse save(@RequestBody @Valid ProductCreationRequest request) {
-        var product = new Product();
-        BeanUtils.copyProperties(request, product);
+
+        var product = new Product(null, request.getName(), request.getPrice(), request.getQuantity());
         Product result = productService.save(product);
 
         var productCreationResponse = new ProductCreationResponse();

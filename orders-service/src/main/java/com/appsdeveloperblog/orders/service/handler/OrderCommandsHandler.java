@@ -20,11 +20,11 @@ public class OrderCommandsHandler {
 
     @KafkaHandler
     public void handleCommand(@Payload ApproveOrderCommand approveOrderCommand) {
-        orderService.approveOrder(approveOrderCommand.getOrderId());
+        orderService.approveOrder(approveOrderCommand.orderId());
     }
 
     @KafkaHandler
     public void handleCommand(@Payload RejectOrderCommand rejectOrderCommand) {
-        orderService.rejectOrder(rejectOrderCommand.getOrderId());
+        orderService.rejectOrder(rejectOrderCommand.orderId());
     }
 }

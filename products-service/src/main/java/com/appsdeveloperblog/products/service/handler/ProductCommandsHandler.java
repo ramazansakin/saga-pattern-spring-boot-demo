@@ -7,6 +7,7 @@ import com.appsdeveloperblog.core.dto.commands.ReserveProductCommand;
 import com.appsdeveloperblog.core.dto.events.ProductReservationFailedEvent;
 import com.appsdeveloperblog.core.dto.events.ProductReservedEvent;
 import com.appsdeveloperblog.products.service.ProductService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,13 +19,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 @KafkaListener(topics = "${products.commands.topic.name}")
+@Slf4j
 public class ProductCommandsHandler {
 
     private final ProductService productService;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     private final String productEventsTopicName;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
 
     public ProductCommandsHandler(ProductService productService,
                                   KafkaTemplate<String, Object> kafkaTemplate,
@@ -52,7 +54,7 @@ public class ProductCommandsHandler {
             kafkaTemplate.send(productEventsTopicName, productReservedEvent);
 
         } catch (Exception e) {
-            logger.error(e.getLocalizedMessage(), e);
+            log.error(e.getLocalizedMessage(), e);
 
             ProductReservationFailedEvent productReservationFailedEvent =
                     new ProductReservationFailedEvent(command.productId(),

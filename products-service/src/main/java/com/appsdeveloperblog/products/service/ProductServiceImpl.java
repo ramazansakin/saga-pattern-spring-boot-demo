@@ -4,19 +4,18 @@ import com.appsdeveloperblog.core.dto.Product;
 import com.appsdeveloperblog.core.exceptions.ProductInsufficientQuantityException;
 import com.appsdeveloperblog.products.dao.jpa.entity.ProductEntity;
 import com.appsdeveloperblog.products.dao.jpa.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
 
     @Override
     public Product reserve(Product desiredProduct, UUID orderId) {
@@ -56,7 +55,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> findAll() {
         return productRepository.findAll().stream()
-                .map(entity -> new Product(entity.getId(), entity.getName(), entity.getPrice(), entity.getQuantity()))
+                .map(entity ->
+                        new Product(entity.getId(), entity.getName(), entity.getPrice(), entity.getQuantity()))
                 .toList();
     }
 

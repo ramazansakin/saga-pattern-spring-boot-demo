@@ -1,6 +1,6 @@
 services:
   kafka-1:
-    image: 'bitnami/kafka:3.3.2'
+    image: bitnami/kafka:4.0.0
     container_name: kafka-1
     environment:
       # KRaft settings
@@ -15,12 +15,12 @@ services:
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9094,2@kafka-2:9094,3@kafka-3:9094
     ports:
-      - 9091:9091
+      - "9091:9091"
     volumes:
       - ../kafka-volumes/server-1:/bitnami/kafka
 
   kafka-2:
-    image: 'bitnami/kafka:3.3.2'
+    image: bitnami/kafka:4.0.0
     container_name: kafka-2
     environment:
       # KRaft settings
@@ -35,12 +35,12 @@ services:
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9094,2@kafka-2:9094,3@kafka-3:9094
     ports:
-      - 9092:9092
+      - "9092:9092"
     volumes:
       - ../kafka-volumes/server-2:/bitnami/kafka
 
   kafka-3:
-    image: 'bitnami/kafka:3.3.2'
+    image: bitnami/kafka:4.0.0
     container_name: kafka-3
     environment:
       # KRaft settings
@@ -55,6 +55,6 @@ services:
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9094,2@kafka-2:9094,3@kafka-3:9094
     ports:
-      - 9093:9093
+      - "9093:9093"
     volumes:
       - ../kafka-volumes/server-3:/bitnami/kafka

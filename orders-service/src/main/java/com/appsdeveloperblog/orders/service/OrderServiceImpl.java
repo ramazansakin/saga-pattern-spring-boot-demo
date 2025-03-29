@@ -15,9 +15,12 @@ import java.util.UUID;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+
     private final OrderRepository orderRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+
     private final String ordersEventsTopicName;
+
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             KafkaTemplate<String, Object> kafkaTemplate,
@@ -29,6 +32,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order placeOrder(Order order) {
+
         OrderEntity entity = new OrderEntity();
         entity.setCustomerId(order.customerId());
         entity.setProductId(order.productId());
@@ -54,10 +58,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void approveOrder(UUID orderId) {
+
         OrderEntity orderEntity = orderRepository.findById(orderId).orElse(null);
         Assert.notNull(orderEntity, "No order is found with id " + orderId + " in the database table");
         orderEntity.setStatus(OrderStatus.APPROVED);
         orderRepository.save(orderEntity);
+
         OrderApprovedEvent orderApprovedEvent = new OrderApprovedEvent(orderId);
         kafkaTemplate.send(ordersEventsTopicName, orderApprovedEvent);
     }
@@ -67,6 +73,7 @@ public class OrderServiceImpl implements OrderService {
         OrderEntity orderEntity = orderRepository.findById(orderId).orElse(null);
         Assert.notNull(orderEntity, "No order found with id: " + orderId);
         orderEntity.setStatus(OrderStatus.REJECTED);
+
         orderRepository.save(orderEntity);
     }
 

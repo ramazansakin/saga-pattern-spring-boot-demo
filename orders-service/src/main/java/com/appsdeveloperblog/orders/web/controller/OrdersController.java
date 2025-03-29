@@ -7,6 +7,7 @@ import com.appsdeveloperblog.orders.dto.OrderHistoryResponse;
 import com.appsdeveloperblog.orders.service.OrderHistoryService;
 import com.appsdeveloperblog.orders.service.OrderService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -16,15 +17,12 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/orders")
+@RequiredArgsConstructor
 public class OrdersController {
+
     private final OrderService orderService;
     private final OrderHistoryService orderHistoryService;
 
-
-    public OrdersController(OrderService orderService, OrderHistoryService orderHistoryService) {
-        this.orderService = orderService;
-        this.orderHistoryService = orderHistoryService;
-    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
@@ -46,10 +44,12 @@ public class OrdersController {
     @GetMapping("/{orderId}/history")
     @ResponseStatus(HttpStatus.OK)
     public List<OrderHistoryResponse> getOrderHistory(@PathVariable UUID orderId) {
+
         return orderHistoryService.findByOrderId(orderId).stream().map(orderHistory -> {
             OrderHistoryResponse orderHistoryResponse = new OrderHistoryResponse();
             BeanUtils.copyProperties(orderHistory, orderHistoryResponse);
             return orderHistoryResponse;
         }).toList();
     }
+
 }

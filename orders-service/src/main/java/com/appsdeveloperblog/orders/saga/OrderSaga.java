@@ -19,11 +19,12 @@ import org.springframework.stereotype.Component;
 })
 public class OrderSaga {
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
     private final String productsCommandsTopicName;
-    private final OrderHistoryService orderHistoryService;
     private final String paymentsCommandsTopicName;
     private final String ordersCommandsTopicName;
+
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final OrderHistoryService orderHistoryService;
 
     public OrderSaga(KafkaTemplate<String, Object> kafkaTemplate,
                      @Value("${products.commands.topic.name}") String productsCommandsTopicName,

@@ -20,8 +20,8 @@ public class KafkaConfig {
     @Value("${orders.commands.topic.name}")
     private String ordersCommandsTopicName;
 
-    private final static Integer TOPIC_REPLICATION_FACTOR=3;
-    private final static Integer TOPIC_PARTITIONS=3;
+    private static final Integer TOPIC_REPLICATION_FACTOR=3;
+    private static final Integer TOPIC_PARTITIONS=3;
 
     @Bean
     KafkaTemplate<String, Object> kafkaTemplate(ProducerFactory<String, Object> producerFactory) {
